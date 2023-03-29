@@ -1,10 +1,13 @@
-# Template for React app.
+# Wardrobe
 
-This project was bootstrapped with [Create React Component](https://github.com/facebook/create-react-app).
-Following libs are used:
+### This project was created from [template](https://github.com/cyrilgavala/react-typescript-template).
 
-- [ReactJS](https://reactjs.org)
-- [TypeScript](https://www.typescriptlang.org)
-- [ESLint](https://eslint.org)
-- [Prettier](https://prettier.io)
-- [Babel](https://babeljs.io)
+### Available scripts:
+
+- `npm build` builds the React application
+- `npm run format` reformats the codebase according to prettier configuration
+- `npm run format-check` checks the codebase according to prettier configuration
+- `npm start` starts the application locally
+- `npm run vitest` runs the tests
+- `npm run storybook` runs the isolated environment for development on http://localhost:6006
+- `npm run build-storybook` builds the storybook

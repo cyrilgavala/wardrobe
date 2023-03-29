@@ -1,0 +1,5 @@
+.root {
+  background-color: var(--color-light-blue);
+  padding: 0.5rem;
+  border-radius: 0.5rem;
+}
