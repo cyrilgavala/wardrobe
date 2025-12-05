@@ -1,0 +1,34 @@
+/* General App Styles */
+.app {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 2rem;
+  text-align: center;
+}
+
+.app-header {
+  margin-bottom: 2rem;
+}
+
+.app-header h1 {
+  margin-bottom: 0.5rem;
+}
+
+.app-header p {
+  color: var(--text-secondary);
+  font-size: 0.9em;
+}
+
+.app-main {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.card {
+  padding: 2em;
+  border-radius: 8px;
+  background-color: var(--surface-color);
+  box-shadow: var(--shadow-md);
+}
+
