@@ -1,9 +1,9 @@
 import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
+import { Link, useNavigate } from 'react-router-dom';
+import { useAuthRedirect } from '../hooks/useAuthRedirect';
 import { authService } from '../services/authService';
 import type { RegisterRequest } from '../types/auth';
-import { useAuthRedirect } from '../hooks/useAuthRedirect';
 import './AuthPage.css';
 
 interface RegisterFormData extends RegisterRequest {
@@ -26,7 +26,7 @@ export default function RegisterPage() {
       confirmPassword: '',
       firstName: '',
       lastName: ''
-    }
+    },
   });
 
   const password = watch('password');
@@ -71,7 +71,7 @@ export default function RegisterPage() {
                 maxLength: {
                   value: 50,
                   message: 'First name must not exceed 50 characters'
-                }
+                },
               })}
               placeholder="John"
               disabled={isSubmitting}
@@ -91,7 +91,7 @@ export default function RegisterPage() {
                 maxLength: {
                   value: 50,
                   message: 'Last name must not exceed 50 characters'
-                }
+                },
               })}
               placeholder="Doe"
               disabled={isSubmitting}
@@ -115,7 +115,7 @@ export default function RegisterPage() {
                 maxLength: {
                   value: 50,
                   message: 'Username must not exceed 50 characters'
-                }
+                },
               })}
               placeholder="johndoe"
               disabled={isSubmitting}
@@ -135,7 +135,7 @@ export default function RegisterPage() {
                 pattern: {
                   value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
                   message: 'Invalid email address'
-                }
+                },
               })}
               placeholder="john@example.com"
               disabled={isSubmitting}
@@ -163,8 +163,8 @@ export default function RegisterPage() {
                 pattern: {
                   value: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/,
                   message:
-                    'Password must contain uppercase, lowercase, and numbers'
-                }
+                    'Password must contain uppercase, lowercase, and numbers',
+                },
               })}
               placeholder="Min 8 chars with uppercase, lowercase & numbers"
               disabled={isSubmitting}
@@ -182,7 +182,7 @@ export default function RegisterPage() {
               {...register('confirmPassword', {
                 required: 'Please confirm your password',
                 validate: (value) =>
-                  value === password || 'Passwords do not match'
+                  value === password || 'Passwords do not match',
               })}
               placeholder="Re-enter your password"
               disabled={isSubmitting}
@@ -208,4 +208,3 @@ export default function RegisterPage() {
     </div>
   );
 }
-

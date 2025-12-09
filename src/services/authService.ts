@@ -1,12 +1,12 @@
-import { api } from './api';
 import type {
   AuthenticationResponse,
   LoginRequest,
-  RegisterRequest,
   RefreshTokenRequest,
-  UserResponse,
+  RegisterRequest,
+  UserResponse
 } from '../types/auth';
-import { setCookie, getCookie, deleteCookie } from '../utils/cookies';
+import { deleteCookie, getCookie, setCookie } from '../utils/cookies';
+import { api } from './api';
 
 const TOKEN_KEY = 'accessToken';
 const REFRESH_TOKEN_KEY = 'refreshToken';
@@ -96,4 +96,3 @@ class AuthService {
 }
 
 export const authService = new AuthService();
-

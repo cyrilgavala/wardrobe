@@ -15,4 +15,3 @@ export function useAuthRedirect(redirectTo = '/dashboard') {
     }
   }, [navigate, redirectTo]);
 }
-

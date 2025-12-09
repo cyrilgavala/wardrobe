@@ -1,9 +1,9 @@
 import { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
+import { Link, useNavigate } from 'react-router-dom';
+import { useAuthRedirect } from '../hooks/useAuthRedirect';
 import { authService } from '../services/authService';
 import type { LoginRequest } from '../types/auth';
-import { useAuthRedirect } from '../hooks/useAuthRedirect';
 import './AuthPage.css';
 
 export default function LoginPage() {
@@ -105,4 +105,3 @@ export default function LoginPage() {
     </div>
   );
 }
-

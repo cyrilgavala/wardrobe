@@ -36,7 +36,11 @@ export function UserDetailsModal({ isOpen, onClose }: UserDetailsModalProps) {
       <div className={`modal-container ${isOpen ? 'modal-open' : ''}`}>
         <div className="modal-header">
           <h2>User Profile</h2>
-          <button className="modal-close-btn" onClick={onClose} aria-label="Close modal">
+          <button
+            className="modal-close-btn"
+            onClick={onClose}
+            aria-label="Close modal"
+          >
             ✕
           </button>
         </div>
@@ -114,9 +118,12 @@ export function UserDetailsModal({ isOpen, onClose }: UserDetailsModalProps) {
                   <span className="detail-value">
                     {(() => {
                       // Try to use lastLoginAt, fallback to createdAt for freshly registered users
-                      const loginDate = user.lastLoginAt && user.lastLoginAt !== 'null' && user.lastLoginAt !== ''
-                        ? user.lastLoginAt
-                        : user.createdAt;
+                      const loginDate =
+                        user.lastLoginAt &&
+                        user.lastLoginAt !== 'null' &&
+                        user.lastLoginAt !== ''
+                          ? user.lastLoginAt
+                          : user.createdAt;
 
                       const date = new Date(loginDate);
 
@@ -147,4 +154,3 @@ export function UserDetailsModal({ isOpen, onClose }: UserDetailsModalProps) {
     </div>
   );
 }
-

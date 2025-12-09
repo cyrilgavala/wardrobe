@@ -43,7 +43,9 @@ export function setCookie(
 
   // Debug: Log cookie setting in development
   if (import.meta.env.DEV) {
-    console.log(`[Cookie] Set: ${name} (secure: ${secure}, sameSite: ${sameSite})`);
+    console.log(
+      `[Cookie] Set: ${name} (secure: ${secure}, sameSite: ${sameSite})`
+    );
   }
 }
 
@@ -77,4 +79,3 @@ export function deleteCookie(name: string, path = '/'): void {
 export function hasCookie(name: string): boolean {
   return getCookie(name) !== null;
 }
-

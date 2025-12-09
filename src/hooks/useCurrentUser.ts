@@ -17,4 +17,3 @@ export function useCurrentUser() {
     enabled: authService.isAuthenticated(), // Only fetch if authenticated
   });
 }
-
