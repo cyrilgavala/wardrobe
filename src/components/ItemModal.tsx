@@ -1,5 +1,6 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
+import { useForm } from 'react-hook-form';
 import { itemService } from '../services/itemService';
 import type {
   CreateItemRequest,
@@ -20,28 +21,34 @@ export function ItemModal({ isOpen, onClose, item }: ItemModalProps) {
   const queryClient = useQueryClient();
   const isEditMode = !!item;
 
-  const [formData, setFormData] = useState<CreateItemRequest>({
-    name: '',
-    description: '',
-    category: 'TOPS' as ItemCategory,
-    room: 'WARDROBE' as ItemRoom,
-    color: '',
-    brand: '',
-    size: '',
-    washingTemperature: undefined,
-    canBeIroned: false,
-    canBeTumbleDried: false,
-    canBeDryCleaned: false,
-    canBeBleached: false,
-    imageUrl: '',
-    boxNumber: undefined
+  const {
+    register,
+    handleSubmit: handleFormSubmit,
+    reset,
+    formState: { errors },
+    setError: setFieldError
+  } = useForm<CreateItemRequest>({
+    defaultValues: {
+      name: '',
+      description: '',
+      category: 'TOPS' as ItemCategory,
+      room: 'WARDROBE' as ItemRoom,
+      color: '',
+      brand: '',
+      size: '',
+      washingTemperature: undefined,
+      canBeIroned: false,
+      canBeTumbleDried: false,
+      canBeDryCleaned: false,
+      canBeBleached: false,
+      imageUrl: '',
+      boxNumber: undefined
+    }
   });
-
-  const [error, setError] = useState<string>('');
 
   useEffect(() => {
     if (item) {
-      setFormData({
+      reset({
         name: item.name,
         description: item.description || '',
         category: item.category,
@@ -59,7 +66,7 @@ export function ItemModal({ isOpen, onClose, item }: ItemModalProps) {
       });
     } else {
       // Reset form when creating new item
-      setFormData({
+      reset({
         name: '',
         description: '',
         category: 'TOPS' as ItemCategory,
@@ -76,8 +83,7 @@ export function ItemModal({ isOpen, onClose, item }: ItemModalProps) {
         boxNumber: undefined
       });
     }
-    setError('');
-  }, [item, isOpen]);
+  }, [item, isOpen, reset]);
 
   const createMutation = useMutation({
     mutationFn: (data: CreateItemRequest) => itemService.createItem(data),
@@ -86,7 +92,10 @@ export function ItemModal({ isOpen, onClose, item }: ItemModalProps) {
       onClose();
     },
     onError: (error: any) => {
-      setError(error.message || 'Failed to create item');
+      setFieldError('root', {
+        type: 'manual',
+        message: error.message || 'Failed to create item'
+      });
     }
   });
 
@@ -99,30 +108,24 @@ export function ItemModal({ isOpen, onClose, item }: ItemModalProps) {
       onClose();
     },
     onError: (error: any) => {
-      setError(error.message || 'Failed to update item');
+      setFieldError('root', {
+        type: 'manual',
+        message: error.message || 'Failed to update item'
+      });
     }
   });
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    setError('');
-
-    // Validate required fields
-    if (!formData.name || !formData.category || !formData.room) {
-      setError('Please fill in all required fields');
-      return;
-    }
-
+  const onSubmit = handleFormSubmit((data) => {
     // Clean up empty strings and convert to undefined
     const cleanedData = {
-      ...formData,
-      description: formData.description || undefined,
-      color: formData.color || undefined,
-      brand: formData.brand || undefined,
-      size: formData.size || undefined,
-      imageUrl: formData.imageUrl || undefined,
-      washingTemperature: formData.washingTemperature || undefined,
-      boxNumber: formData.boxNumber || undefined
+      ...data,
+      description: data.description || undefined,
+      color: data.color || undefined,
+      brand: data.brand || undefined,
+      size: data.size || undefined,
+      imageUrl: data.imageUrl || undefined,
+      washingTemperature: data.washingTemperature || undefined,
+      boxNumber: data.boxNumber || undefined
     };
 
     if (isEditMode) {
@@ -130,25 +133,7 @@ export function ItemModal({ isOpen, onClose, item }: ItemModalProps) {
     } else {
       createMutation.mutate(cleanedData);
     }
-  };
-
-  const handleInputChange = (
-    e: React.ChangeEvent<
-      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
-    >
-  ) => {
-    const { name, value, type } = e.target;
-
-    if (type === 'checkbox') {
-      const checked = (e.target as HTMLInputElement).checked;
-      setFormData((prev) => ({ ...prev, [name]: checked }));
-    } else if (type === 'number') {
-      const numValue = value === '' ? undefined : Number(value);
-      setFormData((prev) => ({ ...prev, [name]: numValue }));
-    } else {
-      setFormData((prev) => ({ ...prev, [name]: value }));
-    }
-  };
+  });
 
   if (!isOpen) return null;
 
@@ -165,9 +150,11 @@ export function ItemModal({ isOpen, onClose, item }: ItemModalProps) {
         </div>
 
         <div className="item-modal-content">
-          {error && <div className="item-modal-error">{error}</div>}
+          {errors.root && (
+            <div className="item-modal-error">{errors.root.message}</div>
+          )}
 
-          <form onSubmit={handleSubmit} className="item-modal-form">
+          <form id="item-form" onSubmit={onSubmit} className="item-modal-form">
             {/* Basic Information */}
             <div className="item-modal-form-group">
               <label className="item-modal-form-label required" htmlFor="name">
@@ -176,13 +163,18 @@ export function ItemModal({ isOpen, onClose, item }: ItemModalProps) {
               <input
                 type="text"
                 id="name"
-                name="name"
+                {...register('name', {
+                  required: 'Name is required',
+                  maxLength: {
+                    value: 100,
+                    message: 'Name must be less than 100 characters'
+                  }
+                })}
                 className="item-modal-form-input"
-                value={formData.name}
-                onChange={handleInputChange}
-                maxLength={100}
-                required
               />
+              {errors.name && (
+                <div className="item-modal-form-error">{errors.name.message}</div>
+              )}
             </div>
 
             <div className="item-modal-form-group">
@@ -191,12 +183,17 @@ export function ItemModal({ isOpen, onClose, item }: ItemModalProps) {
               </label>
               <textarea
                 id="description"
-                name="description"
+                {...register('description', {
+                  maxLength: {
+                    value: 500,
+                    message: 'Description must be less than 500 characters'
+                  }
+                })}
                 className="item-modal-form-textarea"
-                value={formData.description}
-                onChange={handleInputChange}
-                maxLength={500}
               />
+              {errors.description && (
+                <div className="item-modal-form-error">{errors.description.message}</div>
+              )}
             </div>
 
             <div className="item-modal-form-group">
@@ -208,11 +205,8 @@ export function ItemModal({ isOpen, onClose, item }: ItemModalProps) {
               </label>
               <select
                 id="category"
-                name="category"
+                {...register('category', { required: 'Category is required' })}
                 className="item-modal-form-select"
-                value={formData.category}
-                onChange={handleInputChange}
-                required
               >
                 <option value="TOPS">Tops</option>
                 <option value="BOTTOMS">Bottoms</option>
@@ -226,6 +220,9 @@ export function ItemModal({ isOpen, onClose, item }: ItemModalProps) {
                 <option value="FORMAL">Formal</option>
                 <option value="OTHER">Other</option>
               </select>
+              {errors.category && (
+                <div className="item-modal-form-error">{errors.category.message}</div>
+              )}
             </div>
 
             <div className="item-modal-form-group">
@@ -234,11 +231,8 @@ export function ItemModal({ isOpen, onClose, item }: ItemModalProps) {
               </label>
               <select
                 id="room"
-                name="room"
+                {...register('room', { required: 'Room is required' })}
                 className="item-modal-form-select"
-                value={formData.room}
-                onChange={handleInputChange}
-                required
               >
                 <option value="BEDROOM">Bedroom</option>
                 <option value="WARDROBE">Wardrobe</option>
@@ -250,6 +244,9 @@ export function ItemModal({ isOpen, onClose, item }: ItemModalProps) {
                 <option value="STORAGE">Storage</option>
                 <option value="OTHER">Other</option>
               </select>
+              {errors.room && (
+                <div className="item-modal-form-error">{errors.room.message}</div>
+              )}
             </div>
 
             {/* Item Details */}
@@ -263,11 +260,13 @@ export function ItemModal({ isOpen, onClose, item }: ItemModalProps) {
                 <input
                   type="text"
                   id="color"
-                  name="color"
+                  {...register('color', {
+                    maxLength: {
+                      value: 50,
+                      message: 'Color must be less than 50 characters'
+                    }
+                  })}
                   className="item-modal-form-input"
-                  value={formData.color}
-                  onChange={handleInputChange}
-                  maxLength={50}
                 />
               </div>
 
@@ -278,11 +277,13 @@ export function ItemModal({ isOpen, onClose, item }: ItemModalProps) {
                 <input
                   type="text"
                   id="brand"
-                  name="brand"
+                  {...register('brand', {
+                    maxLength: {
+                      value: 50,
+                      message: 'Brand must be less than 50 characters'
+                    }
+                  })}
                   className="item-modal-form-input"
-                  value={formData.brand}
-                  onChange={handleInputChange}
-                  maxLength={50}
                 />
               </div>
 
@@ -293,11 +294,13 @@ export function ItemModal({ isOpen, onClose, item }: ItemModalProps) {
                 <input
                   type="text"
                   id="size"
-                  name="size"
+                  {...register('size', {
+                    maxLength: {
+                      value: 20,
+                      message: 'Size must be less than 20 characters'
+                    }
+                  })}
                   className="item-modal-form-input"
-                  value={formData.size}
-                  onChange={handleInputChange}
-                  maxLength={20}
                 />
               </div>
 
@@ -308,11 +311,13 @@ export function ItemModal({ isOpen, onClose, item }: ItemModalProps) {
                 <input
                   type="url"
                   id="imageUrl"
-                  name="imageUrl"
+                  {...register('imageUrl', {
+                    maxLength: {
+                      value: 500,
+                      message: 'Image URL must be less than 500 characters'
+                    }
+                  })}
                   className="item-modal-form-input"
-                  value={formData.imageUrl}
-                  onChange={handleInputChange}
-                  maxLength={500}
                 />
               </div>
 
@@ -323,11 +328,14 @@ export function ItemModal({ isOpen, onClose, item }: ItemModalProps) {
                 <input
                   type="number"
                   id="boxNumber"
-                  name="boxNumber"
+                  {...register('boxNumber', {
+                    valueAsNumber: true,
+                    min: {
+                      value: 1,
+                      message: 'Box number must be at least 1'
+                    }
+                  })}
                   className="item-modal-form-input"
-                  value={formData.boxNumber || ''}
-                  onChange={handleInputChange}
-                  min={1}
                 />
               </div>
             </div>
@@ -348,16 +356,27 @@ export function ItemModal({ isOpen, onClose, item }: ItemModalProps) {
                 <input
                   type="number"
                   id="washingTemperature"
-                  name="washingTemperature"
+                  {...register('washingTemperature', {
+                    valueAsNumber: true,
+                    min: {
+                      value: 0,
+                      message: 'Temperature must be at least 0°C'
+                    },
+                    max: {
+                      value: 95,
+                      message: 'Temperature must be at most 95°C'
+                    }
+                  })}
                   className="item-modal-form-input"
-                  value={formData.washingTemperature || ''}
-                  onChange={handleInputChange}
-                  min={0}
-                  max={95}
                 />
                 <div className="item-modal-form-help">
                   Maximum washing temperature in Celsius (0-95)
                 </div>
+                {errors.washingTemperature && (
+                  <div className="item-modal-form-error">
+                    {errors.washingTemperature.message}
+                  </div>
+                )}
               </div>
 
               <div className="item-modal-form-checkboxes">
@@ -365,10 +384,8 @@ export function ItemModal({ isOpen, onClose, item }: ItemModalProps) {
                   <input
                     type="checkbox"
                     id="canBeIroned"
-                    name="canBeIroned"
+                    {...register('canBeIroned')}
                     className="item-modal-form-checkbox"
-                    checked={formData.canBeIroned}
-                    onChange={handleInputChange}
                   />
                   <label
                     htmlFor="canBeIroned"
@@ -382,10 +399,8 @@ export function ItemModal({ isOpen, onClose, item }: ItemModalProps) {
                   <input
                     type="checkbox"
                     id="canBeTumbleDried"
-                    name="canBeTumbleDried"
+                    {...register('canBeTumbleDried')}
                     className="item-modal-form-checkbox"
-                    checked={formData.canBeTumbleDried}
-                    onChange={handleInputChange}
                   />
                   <label
                     htmlFor="canBeTumbleDried"
@@ -399,10 +414,8 @@ export function ItemModal({ isOpen, onClose, item }: ItemModalProps) {
                   <input
                     type="checkbox"
                     id="canBeDryCleaned"
-                    name="canBeDryCleaned"
+                    {...register('canBeDryCleaned')}
                     className="item-modal-form-checkbox"
-                    checked={formData.canBeDryCleaned}
-                    onChange={handleInputChange}
                   />
                   <label
                     htmlFor="canBeDryCleaned"
@@ -416,10 +429,8 @@ export function ItemModal({ isOpen, onClose, item }: ItemModalProps) {
                   <input
                     type="checkbox"
                     id="canBeBleached"
-                    name="canBeBleached"
+                    {...register('canBeBleached')}
                     className="item-modal-form-checkbox"
-                    checked={formData.canBeBleached}
-                    onChange={handleInputChange}
                   />
                   <label
                     htmlFor="canBeBleached"
@@ -443,8 +454,8 @@ export function ItemModal({ isOpen, onClose, item }: ItemModalProps) {
           </button>
           <button
             type="submit"
+            form="item-form"
             className="item-modal-btn item-modal-btn-submit"
-            onClick={handleSubmit}
             disabled={createMutation.isPending || updateMutation.isPending}
           >
             {isEditMode ? 'Update' : 'Create'}
