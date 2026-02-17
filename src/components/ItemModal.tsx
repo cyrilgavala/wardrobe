@@ -2,13 +2,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { itemService } from '../services/itemService';
-import type {
-  CreateItemRequest,
-  ItemCategory,
-  ItemResponse,
-  ItemRoom,
-  UpdateItemRequest
-} from '../types/item';
+import type { CreateItemRequest, ItemResponse, UpdateItemRequest } from '../types/item';
 import './ItemModal.css';
 
 interface ItemModalProps {
@@ -31,15 +25,12 @@ export function ItemModal({ isOpen, onClose, item }: ItemModalProps) {
     defaultValues: {
       name: '',
       description: '',
-      category: 'TOPS' as ItemCategory,
-      room: 'WARDROBE' as ItemRoom,
       color: '',
       brand: '',
       size: '',
       washingTemperature: undefined,
       canBeIroned: false,
-      canBeTumbleDried: false,
-      canBeDryCleaned: false,
+      canBeDried: false,
       canBeBleached: false,
       imageUrl: '',
       boxNumber: undefined
@@ -51,15 +42,12 @@ export function ItemModal({ isOpen, onClose, item }: ItemModalProps) {
       reset({
         name: item.name,
         description: item.description || '',
-        category: item.category,
-        room: item.room,
         color: item.color || '',
         brand: item.brand || '',
         size: item.size || '',
         washingTemperature: item.washingTemperature,
         canBeIroned: item.canBeIroned || false,
-        canBeTumbleDried: item.canBeTumbleDried || false,
-        canBeDryCleaned: item.canBeDryCleaned || false,
+        canBeDried: item.canBeDried || false,
         canBeBleached: item.canBeBleached || false,
         imageUrl: item.imageUrl || '',
         boxNumber: item.boxNumber
@@ -69,15 +57,12 @@ export function ItemModal({ isOpen, onClose, item }: ItemModalProps) {
       reset({
         name: '',
         description: '',
-        category: 'TOPS' as ItemCategory,
-        room: 'WARDROBE' as ItemRoom,
         color: '',
         brand: '',
         size: '',
         washingTemperature: undefined,
         canBeIroned: false,
-        canBeTumbleDried: false,
-        canBeDryCleaned: false,
+        canBeDried: false,
         canBeBleached: false,
         imageUrl: '',
         boxNumber: undefined
@@ -193,59 +178,6 @@ export function ItemModal({ isOpen, onClose, item }: ItemModalProps) {
               />
               {errors.description && (
                 <div className="item-modal-form-error">{errors.description.message}</div>
-              )}
-            </div>
-
-            <div className="item-modal-form-group">
-              <label
-                className="item-modal-form-label required"
-                htmlFor="category"
-              >
-                Category
-              </label>
-              <select
-                id="category"
-                {...register('category', { required: 'Category is required' })}
-                className="item-modal-form-select"
-              >
-                <option value="TOPS">Tops</option>
-                <option value="BOTTOMS">Bottoms</option>
-                <option value="DRESSES">Dresses</option>
-                <option value="OUTERWEAR">Outerwear</option>
-                <option value="SHOES">Shoes</option>
-                <option value="ACCESSORIES">Accessories</option>
-                <option value="UNDERWEAR">Underwear</option>
-                <option value="SPORTSWEAR">Sportswear</option>
-                <option value="SLEEPWEAR">Sleepwear</option>
-                <option value="FORMAL">Formal</option>
-                <option value="OTHER">Other</option>
-              </select>
-              {errors.category && (
-                <div className="item-modal-form-error">{errors.category.message}</div>
-              )}
-            </div>
-
-            <div className="item-modal-form-group">
-              <label className="item-modal-form-label required" htmlFor="room">
-                Room
-              </label>
-              <select
-                id="room"
-                {...register('room', { required: 'Room is required' })}
-                className="item-modal-form-select"
-              >
-                <option value="BEDROOM">Bedroom</option>
-                <option value="WARDROBE">Wardrobe</option>
-                <option value="CLOSET">Closet</option>
-                <option value="BATHROOM">Bathroom</option>
-                <option value="LAUNDRY_ROOM">Laundry Room</option>
-                <option value="HALLWAY">Hallway</option>
-                <option value="GARAGE">Garage</option>
-                <option value="STORAGE">Storage</option>
-                <option value="OTHER">Other</option>
-              </select>
-              {errors.room && (
-                <div className="item-modal-form-error">{errors.room.message}</div>
               )}
             </div>
 
@@ -398,30 +330,15 @@ export function ItemModal({ isOpen, onClose, item }: ItemModalProps) {
                 <div className="item-modal-form-checkbox-group">
                   <input
                     type="checkbox"
-                    id="canBeTumbleDried"
-                    {...register('canBeTumbleDried')}
+                    id="canBeDried"
+                    {...register('canBeDried')}
                     className="item-modal-form-checkbox"
                   />
                   <label
-                    htmlFor="canBeTumbleDried"
+                    htmlFor="canBeDried"
                     className="item-modal-form-checkbox-label"
                   >
-                    Can be tumble dried
-                  </label>
-                </div>
-
-                <div className="item-modal-form-checkbox-group">
-                  <input
-                    type="checkbox"
-                    id="canBeDryCleaned"
-                    {...register('canBeDryCleaned')}
-                    className="item-modal-form-checkbox"
-                  />
-                  <label
-                    htmlFor="canBeDryCleaned"
-                    className="item-modal-form-checkbox-label"
-                  >
-                    Can be dry cleaned
+                    Can be dried
                   </label>
                 </div>
 

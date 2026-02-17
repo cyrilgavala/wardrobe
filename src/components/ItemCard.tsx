@@ -20,14 +20,6 @@ export function ItemCard({ item, onEdit, onDelete }: ItemCardProps) {
     onEdit(item);
   };
 
-  const formatCategoryName = (category: string) => {
-    return category.replace(/_/g, ' ').toLowerCase();
-  };
-
-  const formatRoomName = (room: string) => {
-    return room.replace(/_/g, ' ').toLowerCase();
-  };
-
   return (
     <div className="item-card">
       {item.imageUrl ? (
@@ -39,9 +31,6 @@ export function ItemCard({ item, onEdit, onDelete }: ItemCardProps) {
       <div className="item-card-content">
         <div className="item-card-header">
           <h3 className="item-card-name">{item.name}</h3>
-          <span className="item-card-category">
-            {formatCategoryName(item.category)}
-          </span>
         </div>
 
         {item.description && (
@@ -84,11 +73,8 @@ export function ItemCard({ item, onEdit, onDelete }: ItemCardProps) {
           {item.canBeIroned && (
             <div className="item-card-care-icon active">✓ Iron</div>
           )}
-          {item.canBeTumbleDried && (
-            <div className="item-card-care-icon active">✓ Tumble Dry</div>
-          )}
-          {item.canBeDryCleaned && (
-            <div className="item-card-care-icon active">✓ Dry Clean</div>
+          {item.canBeDried && (
+            <div className="item-card-care-icon active">✓ Dry</div>
           )}
           {item.canBeBleached && (
             <div className="item-card-care-icon active">✓ Bleach</div>
@@ -96,7 +82,6 @@ export function ItemCard({ item, onEdit, onDelete }: ItemCardProps) {
         </div>
 
         <div className="item-card-footer">
-          <div className="item-card-room">📍 {formatRoomName(item.room)}</div>
           <div className="item-card-actions">
             <button
               onClick={handleEdit}

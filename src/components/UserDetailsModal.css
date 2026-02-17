@@ -158,7 +158,7 @@
 .btn-retry:hover {
   background: var(--primary-dark);
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+  box-shadow: 0 4px 12px rgba(6, 182, 212, 0.3);
 }
 
 /* User Details */
@@ -190,7 +190,7 @@
   justify-content: center;
   font-size: 2.5rem;
   font-weight: 700;
-  box-shadow: 0 8px 24px rgba(102, 126, 234, 0.3);
+  box-shadow: 0 8px 24px rgba(6, 182, 212, 0.3);
   letter-spacing: 2px;
 }
 
@@ -271,7 +271,7 @@
 .detail-value-mono {
   font-family: "Courier New", monospace;
   font-size: 0.875rem;
-  background: rgba(102, 126, 234, 0.1);
+  background: rgba(6, 182, 212, 0.1);
   padding: 0.5rem;
   border-radius: 6px;
 }
@@ -348,6 +348,6 @@
   }
 
   .detail-value-mono {
-    background: rgba(102, 126, 234, 0.2);
+    background: rgba(6, 182, 212, 0.15);
   }
 }

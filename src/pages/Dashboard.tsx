@@ -15,7 +15,6 @@ export default function Dashboard() {
   const queryClient = useQueryClient();
   const [isUserModalOpen, setIsUserModalOpen] = useState(false);
   const [isItemModalOpen, setIsItemModalOpen] = useState(false);
-  const [selectedCategory, setSelectedCategory] = useState<string>('');
   const [editingItem, setEditingItem] = useState<ItemResponse | undefined>(
     undefined
   );
@@ -24,7 +23,7 @@ export default function Dashboard() {
     data: items,
     isLoading,
     error
-  } = useItems(selectedCategory || undefined);
+  } = useItems();
 
   const deleteMutation = useMutation({
     mutationFn: (id: string) => itemService.deleteItem(id),
@@ -76,10 +75,6 @@ export default function Dashboard() {
     setEditingItem(undefined);
   };
 
-  const handleCategoryChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    setSelectedCategory(e.target.value);
-  };
-
   return (
     <div className="dashboard-container">
       <UserDetailsModal isOpen={isUserModalOpen} onClose={closeUserModal} />
@@ -93,24 +88,6 @@ export default function Dashboard() {
         <div className="dashboard-header-content">
           <div className="dashboard-header-left">
             <h1>My Wardrobe</h1>
-            <select
-              className="dashboard-filter-select"
-              value={selectedCategory}
-              onChange={handleCategoryChange}
-            >
-              <option value="">All Categories</option>
-              <option value="TOPS">Tops</option>
-              <option value="BOTTOMS">Bottoms</option>
-              <option value="DRESSES">Dresses</option>
-              <option value="OUTERWEAR">Outerwear</option>
-              <option value="SHOES">Shoes</option>
-              <option value="ACCESSORIES">Accessories</option>
-              <option value="UNDERWEAR">Underwear</option>
-              <option value="SPORTSWEAR">Sportswear</option>
-              <option value="SLEEPWEAR">Sleepwear</option>
-              <option value="FORMAL">Formal</option>
-              <option value="OTHER">Other</option>
-            </select>
             <button onClick={handleCreateClick} className="btn-add-item">
               <span>+</span>
               <span>Add Item</span>
@@ -143,7 +120,6 @@ export default function Dashboard() {
               <>
                 <div className="dashboard-items-count">
                   {items.length} {items.length === 1 ? 'item' : 'items'} found
-                  {selectedCategory && ` in ${selectedCategory.toLowerCase()}`}
                 </div>
                 <div className="dashboard-items-grid">
                   {items.map((item) => (
@@ -161,9 +137,7 @@ export default function Dashboard() {
                 <div className="dashboard-empty-icon">👔</div>
                 <div className="dashboard-empty-title">No items found</div>
                 <p className="dashboard-empty-text">
-                  {selectedCategory
-                    ? `No items in the ${selectedCategory.toLowerCase()} category. Try a different category or add a new item.`
-                    : 'Start building your wardrobe by adding your first item!'}
+                  'Start building your wardrobe by adding your first item!'
                 </p>
                 <button onClick={handleCreateClick} className="btn-add-item">
                   <span>+</span>

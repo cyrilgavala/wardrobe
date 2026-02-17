@@ -1,10 +1,10 @@
 import { useQuery } from '@tanstack/react-query';
 import { itemService } from '../services/itemService';
 
-export function useItems(category?: string) {
+export function useItems() {
   return useQuery({
-    queryKey: ['items', category],
-    queryFn: () => itemService.getAllItems(category)
+    queryKey: ['items'],
+    queryFn: () => itemService.getAllItems()
   });
 }
 

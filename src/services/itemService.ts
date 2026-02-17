@@ -4,9 +4,8 @@ import type { CreateItemRequest, ItemResponse, UpdateItemRequest } from '../type
 import { api } from './api';
 
 class ItemService {
-  async getAllItems(category?: string): Promise<ItemResponse[]> {
-    const params = category ? { category } : {};
-    return api.get<ItemResponse[]>('/items', { params });
+  async getAllItems(): Promise<ItemResponse[]> {
+    return api.get<ItemResponse[]>('/items', {});
   }
 
   async getItem(id: string): Promise<ItemResponse> {

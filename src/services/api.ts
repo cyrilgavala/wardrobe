@@ -1,13 +1,9 @@
 import axios, { type AxiosInstance, type AxiosRequestConfig } from 'axios';
 import { getCookie } from '../utils/cookies';
+import type { ApiErrorResponse } from '../types/auth.ts';
 
 // API service for making requests to the backend
 const API_BASE_URL = '/api';
-
-export interface ApiError {
-  message: string;
-  status: number;
-}
 
 class ApiService {
   private client: AxiosInstance;
@@ -36,7 +32,7 @@ class ApiService {
     this.client.interceptors.response.use(
       (response) => response,
       (error) => {
-        const apiError: ApiError = {
+        const apiError: ApiErrorResponse = {
           message:
             error.response?.data?.message ||
             error.message ||
