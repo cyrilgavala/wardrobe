@@ -1,12 +1,11 @@
 import axios, { type AxiosInstance, type AxiosRequestConfig } from 'axios';
-import { getCookie } from '../utils/cookies';
 import type { ApiErrorResponse } from '../types/auth.ts';
 
 // API service for making requests to the backend
 const API_BASE_URL = '/api';
 
 class ApiService {
-  private client: AxiosInstance;
+  client: AxiosInstance;
 
   constructor() {
     this.client = axios.create({
@@ -19,9 +18,9 @@ class ApiService {
     // Request interceptor to add JWT token
     this.client.interceptors.request.use(
       (config) => {
-        const token = getCookie('accessToken');
-        if (token) {
-          config.headers.Authorization = `Bearer ${token}`;
+        // Remove Content-Type header for FormData so browser/axios sets it with boundary
+        if (config.data instanceof FormData) {
+          delete config.headers['Content-Type'];
         }
         return config;
       },
@@ -70,15 +69,6 @@ class ApiService {
 
   async delete<T>(endpoint: string, config?: AxiosRequestConfig): Promise<T> {
     const response = await this.client.delete<T>(endpoint, config);
-    return response.data;
-  }
-
-  async patch<T>(
-    endpoint: string,
-    data?: unknown,
-    config?: AxiosRequestConfig,
-  ): Promise<T> {
-    const response = await this.client.patch<T>(endpoint, data, config);
     return response.data;
   }
 }

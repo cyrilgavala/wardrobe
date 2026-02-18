@@ -208,8 +208,37 @@
   text-decoration: underline;
 }
 
-/* Tablet & Mobile */
-@media (max-width: 768px) {
+/* iPhone and small mobile */
+@media (max-width: 428px) {
+  .auth-container {
+    padding: 1rem;
+  }
+
+  .auth-card {
+    padding: 1.5rem 1rem;
+    border-radius: 16px;
+  }
+
+  .auth-card h1 {
+    font-size: 1.5rem;
+  }
+
+  .form-row {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  .form-group label {
+    font-size: 0.875rem;
+  }
+
+  .btn-primary {
+    font-size: 0.9375rem;
+  }
+}
+
+/* Tablet */
+@media (min-width: 429px) and (max-width: 768px) {
   .auth-container {
     padding: 1.5rem;
   }

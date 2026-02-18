@@ -94,12 +94,18 @@ export default function Dashboard() {
             </button>
           </div>
           <div className="dashboard-header-actions">
-            <button onClick={openUserModal} className="btn-profile">
-              Profile
-            </button>
-            <button onClick={handleLogout} className="btn-logout">
-              Logout
-            </button>
+            <button
+              onClick={openUserModal}
+              className="btn-icon btn-profile"
+              title="Profile"
+              aria-label="Profile"
+            />
+            <button
+              onClick={handleLogout}
+              className="btn-icon btn-logout"
+              title="Logout"
+              aria-label="Logout"
+            />
           </div>
         </div>
       </header>

@@ -12,7 +12,7 @@ export interface ItemResponse {
   canBeIroned?: boolean;
   canBeDried?: boolean;
   canBeBleached?: boolean;
-  imageUrl?: string;
+  imageId?: string;
   boxNumber?: number;
   createdAt: string;
   updatedAt: string;
@@ -28,7 +28,7 @@ export interface CreateItemRequest {
   canBeIroned?: boolean;
   canBeDried?: boolean;
   canBeBleached?: boolean;
-  imageUrl?: string;
+  image?: File;
   boxNumber?: number;
 }
 
@@ -42,6 +42,6 @@ export interface UpdateItemRequest {
   canBeIroned?: boolean;
   canBeDried?: boolean;
   canBeBleached?: boolean;
-  imageUrl?: string;
+  image?: File;
   boxNumber?: number;
 }

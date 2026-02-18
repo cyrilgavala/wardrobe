@@ -1,4 +1,6 @@
+import { useState } from 'react';
 import type { ItemResponse } from '../types/item';
+import { ImagePreviewModal } from './ImagePreviewModal';
 import './ItemCard.css';
 
 interface ItemCardProps {
@@ -8,6 +10,8 @@ interface ItemCardProps {
 }
 
 export function ItemCard({ item, onEdit, onDelete }: ItemCardProps) {
+  const [isPreviewOpen, setIsPreviewOpen] = useState(false);
+
   const handleDelete = (e: React.MouseEvent) => {
     e.stopPropagation();
     if (window.confirm(`Are you sure you want to delete "${item.name}"?`)) {
@@ -20,14 +24,13 @@ export function ItemCard({ item, onEdit, onDelete }: ItemCardProps) {
     onEdit(item);
   };
 
+  const handlePreview = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setIsPreviewOpen(true);
+  };
+
   return (
     <div className="item-card">
-      {item.imageUrl ? (
-        <img src={item.imageUrl} alt={item.name} className="item-card-image" />
-      ) : (
-        <div className="item-card-placeholder">👕</div>
-      )}
-
       <div className="item-card-content">
         <div className="item-card-header">
           <h3 className="item-card-name">{item.name}</h3>
@@ -90,6 +93,12 @@ export function ItemCard({ item, onEdit, onDelete }: ItemCardProps) {
               Edit
             </button>
             <button
+              onClick={handlePreview}
+              className="item-card-btn item-card-btn-preview"
+            >
+              Image Preview
+            </button>
+            <button
               onClick={handleDelete}
               className="item-card-btn item-card-btn-delete"
             >
@@ -98,6 +107,13 @@ export function ItemCard({ item, onEdit, onDelete }: ItemCardProps) {
           </div>
         </div>
       </div>
+
+      <ImagePreviewModal
+        isOpen={isPreviewOpen}
+        onClose={() => setIsPreviewOpen(false)}
+        imageId={item.id}
+        itemName={item.name}
+      />
     </div>
   );
 }

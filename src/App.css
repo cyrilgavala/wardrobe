@@ -2,12 +2,12 @@
 .app {
   max-width: 1280px;
   margin: 0 auto;
-  padding: 2rem;
+  padding: clamp(1rem, 3vw, 2rem);
   text-align: center;
 }
 
 .app-header {
-  margin-bottom: 2rem;
+  margin-bottom: clamp(1rem, 3vw, 2rem);
 }
 
 .app-header h1 {
@@ -16,7 +16,7 @@
 
 .app-header p {
   color: var(--text-secondary);
-  font-size: 0.9em;
+  font-size: clamp(0.875rem, 2vw, 0.9em);
 }
 
 .app-main {
@@ -26,7 +26,7 @@
 }
 
 .card {
-  padding: 2em;
+  padding: clamp(1.5rem, 4vw, 2rem);
   border-radius: 8px;
   background-color: var(--surface-color);
   box-shadow: var(--shadow-md);

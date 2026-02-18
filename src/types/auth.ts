@@ -36,6 +36,8 @@ export interface UserResponse {
 }
 
 export interface ApiErrorResponse {
-  message: string;
+  timestamp?: string;
   status: number;
+  error?: string;
+  message: string;
 }

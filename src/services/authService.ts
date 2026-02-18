@@ -16,7 +16,7 @@ class AuthService {
   async login(data: LoginRequest): Promise<AuthenticationResponse> {
     const response = await api.post<AuthenticationResponse>(
       '/auth/login',
-      data,
+      data
     );
     console.log('[AuthService] Login response:', response);
     this.saveTokens(response);
@@ -27,7 +27,7 @@ class AuthService {
   async register(data: RegisterRequest): Promise<AuthenticationResponse> {
     const response = await api.post<AuthenticationResponse>(
       '/auth/register',
-      data,
+      data
     );
     this.saveTokens(response);
     return response;
@@ -36,7 +36,7 @@ class AuthService {
   // Logout user
   async logout(): Promise<void> {
     try {
-      await api.post('/auth/logout');
+      await api.post('/auth/logout', { headers: { Authorization: `Bearer ${getCookie('accessToken')}` } });
     } finally {
       this.clearTokens();
     }
@@ -52,7 +52,7 @@ class AuthService {
     const data: RefreshTokenRequest = { refreshToken };
     const response = await api.post<AuthenticationResponse>(
       '/auth/refresh',
-      data,
+      data
     );
     this.saveTokens(response);
     return response;
@@ -60,7 +60,7 @@ class AuthService {
 
   // Get current user
   async getCurrentUser(): Promise<UserResponse> {
-    return api.get<UserResponse>('/auth/me');
+    return api.get<UserResponse>('/auth/me', { headers: { Authorization: `Bearer ${getCookie('accessToken')}` } });
   }
 
   // Token management
@@ -68,12 +68,12 @@ class AuthService {
     // Access token expires in 1 day
     setCookie(TOKEN_KEY, response.accessToken, {
       days: 1,
-      sameSite: 'strict',
+      sameSite: 'strict'
     });
     // Refresh token expires in 7 days
     setCookie(REFRESH_TOKEN_KEY, response.refreshToken, {
       days: 7,
-      sameSite: 'strict',
+      sameSite: 'strict'
     });
   }
 

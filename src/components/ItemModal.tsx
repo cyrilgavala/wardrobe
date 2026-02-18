@@ -1,9 +1,12 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { itemService } from '../services/itemService';
 import type { CreateItemRequest, ItemResponse, UpdateItemRequest } from '../types/item';
 import './ItemModal.css';
+
+const MAX_IMAGE_SIZE_BYTES = 20 * 1024 * 1024;
+const formatSizeMB = (bytes: number) => (bytes / (1024 * 1024)).toFixed(1);
 
 interface ItemModalProps {
   isOpen: boolean;
@@ -14,13 +17,15 @@ interface ItemModalProps {
 export function ItemModal({ isOpen, onClose, item }: ItemModalProps) {
   const queryClient = useQueryClient();
   const isEditMode = !!item;
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
 
   const {
     register,
     handleSubmit: handleFormSubmit,
     reset,
     formState: { errors },
-    setError: setFieldError
+    setError: setFieldError,
+    clearErrors
   } = useForm<CreateItemRequest>({
     defaultValues: {
       name: '',
@@ -32,7 +37,6 @@ export function ItemModal({ isOpen, onClose, item }: ItemModalProps) {
       canBeIroned: false,
       canBeDried: false,
       canBeBleached: false,
-      imageUrl: '',
       boxNumber: undefined
     }
   });
@@ -49,9 +53,9 @@ export function ItemModal({ isOpen, onClose, item }: ItemModalProps) {
         canBeIroned: item.canBeIroned || false,
         canBeDried: item.canBeDried || false,
         canBeBleached: item.canBeBleached || false,
-        imageUrl: item.imageUrl || '',
         boxNumber: item.boxNumber
       });
+      setImagePreview(null);
     } else {
       // Reset form when creating new item
       reset({
@@ -64,11 +68,34 @@ export function ItemModal({ isOpen, onClose, item }: ItemModalProps) {
         canBeIroned: false,
         canBeDried: false,
         canBeBleached: false,
-        imageUrl: '',
         boxNumber: undefined
       });
+      setImagePreview(null);
     }
   }, [item, isOpen, reset]);
+
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      if (file.size > MAX_IMAGE_SIZE_BYTES) {
+        setFieldError('root', {
+          type: 'manual',
+          message: `Image is too large (${formatSizeMB(file.size)} MB). Max is ${formatSizeMB(MAX_IMAGE_SIZE_BYTES)} MB.`
+        });
+        setImagePreview(null);
+        e.target.value = '';
+        return;
+      }
+      clearErrors('root');
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        setImagePreview(event.target?.result as string);
+      };
+      reader.readAsDataURL(file);
+    } else {
+      setImagePreview(null);
+    }
+  };
 
   const createMutation = useMutation({
     mutationFn: (data: CreateItemRequest) => itemService.createItem(data),
@@ -90,6 +117,7 @@ export function ItemModal({ isOpen, onClose, item }: ItemModalProps) {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['items'] });
       queryClient.invalidateQueries({ queryKey: ['item', item!.id] });
+      queryClient.invalidateQueries({ queryKey: ['itemImage', item!.id] });
       onClose();
     },
     onError: (error: any) => {
@@ -101,22 +129,33 @@ export function ItemModal({ isOpen, onClose, item }: ItemModalProps) {
   });
 
   const onSubmit = handleFormSubmit((data) => {
+    // Get the file from the input element
+    const imageInput = document.getElementById('image') as HTMLInputElement;
+    const imageFile = imageInput?.files?.[0];
+
+    if (imageFile && imageFile.size > MAX_IMAGE_SIZE_BYTES) {
+      setFieldError('root', {
+        type: 'manual',
+        message: `Image is too large (${formatSizeMB(imageFile.size)} MB). Max is ${formatSizeMB(MAX_IMAGE_SIZE_BYTES)} MB.`
+      });
+      return;
+    }
     // Clean up empty strings and convert to undefined
-    const cleanedData = {
+    const cleanedData: CreateItemRequest | UpdateItemRequest = {
       ...data,
       description: data.description || undefined,
       color: data.color || undefined,
       brand: data.brand || undefined,
       size: data.size || undefined,
-      imageUrl: data.imageUrl || undefined,
-      washingTemperature: data.washingTemperature || undefined,
-      boxNumber: data.boxNumber || undefined
+      washingTemperature: data.washingTemperature,
+      boxNumber: data.boxNumber || undefined,
+      image: imageFile
     };
 
     if (isEditMode) {
-      updateMutation.mutate(cleanedData);
+      updateMutation.mutate(cleanedData as UpdateItemRequest);
     } else {
-      createMutation.mutate(cleanedData);
+      createMutation.mutate(cleanedData as CreateItemRequest);
     }
   });
 
@@ -237,20 +276,38 @@ export function ItemModal({ isOpen, onClose, item }: ItemModalProps) {
               </div>
 
               <div className="item-modal-form-group">
-                <label className="item-modal-form-label" htmlFor="imageUrl">
-                  Image URL
+                <label className="item-modal-form-label" htmlFor="image">
+                  Image
                 </label>
+                {imagePreview && (
+                  <div className="item-modal-image-preview">
+                    <img src={imagePreview} alt="Preview"
+                         className="item-modal-image-preview-img" />
+                    <button
+                      type="button"
+                      className="item-modal-image-preview-remove"
+                      onClick={() => {
+                        setImagePreview(null);
+                        const input = document.getElementById('image') as HTMLInputElement;
+                        if (input) input.value = '';
+                      }}
+                    >
+                      ✕ Remove
+                    </button>
+                  </div>
+                )}
                 <input
-                  type="url"
-                  id="imageUrl"
-                  {...register('imageUrl', {
-                    maxLength: {
-                      value: 500,
-                      message: 'Image URL must be less than 500 characters'
-                    }
-                  })}
+                  type="file"
+                  id="image"
+                  accept="image/jpeg,image/png,image/webp"
+                  capture="environment"
                   className="item-modal-form-input"
+                  onChange={handleImageChange}
                 />
+                <div className="item-modal-form-help">
+                  Max {formatSizeMB(MAX_IMAGE_SIZE_BYTES)}MB. Supported formats: JPEG, PNG, WebP
+                  <br />
+                </div>
               </div>
 
               <div className="item-modal-form-group">
@@ -285,24 +342,24 @@ export function ItemModal({ isOpen, onClose, item }: ItemModalProps) {
                 >
                   Washing Temperature (°C)
                 </label>
-                <input
-                  type="number"
+                <select
                   id="washingTemperature"
                   {...register('washingTemperature', {
-                    valueAsNumber: true,
-                    min: {
-                      value: 0,
-                      message: 'Temperature must be at least 0°C'
-                    },
-                    max: {
-                      value: 95,
-                      message: 'Temperature must be at most 95°C'
+                    setValueAs: (v) => {
+                      return v === '' ? undefined : Number(v);
                     }
                   })}
                   className="item-modal-form-input"
-                />
+                >
+                  <option value="">None</option>
+                  <option value={0}>0°C</option>
+                  <option value={30}>30°C</option>
+                  <option value={40}>40°C</option>
+                  <option value={60}>60°C</option>
+                  <option value={90}>90°C</option>
+                </select>
                 <div className="item-modal-form-help">
-                  Maximum washing temperature in Celsius (0-95)
+                  Maximum washing temperature in Celsius (0-90)
                 </div>
                 {errors.washingTemperature && (
                   <div className="item-modal-form-error">

@@ -141,12 +141,6 @@ export function UserDetailsModal({ isOpen, onClose }: UserDetailsModalProps) {
                   </span>
                 </div>
               </div>
-
-              <div className="modal-actions">
-                <button onClick={onClose} className="btn-secondary">
-                  Close
-                </button>
-              </div>
             </div>
           )}
         </div>
