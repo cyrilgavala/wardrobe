@@ -32,80 +32,69 @@ export function ItemCard({ item, onEdit, onDelete }: ItemCardProps) {
   return (
     <div className="item-card">
       <div className="item-card-content">
-        <div className="item-card-header">
-          <h3 className="item-card-name">{item.name}</h3>
+        <div className="item-card-main">
+          <h5 className="item-card-name">{item.name}</h5>
+          {item.description && (
+            <p className="item-card-description">{item.description}</p>
+          )}
         </div>
-
-        {item.description && (
-          <p className="item-card-description">{item.description}</p>
-        )}
 
         <div className="item-card-details">
-          {item.color && (
+          <div className="item-card-details-wrapper">
             <div className="item-card-detail">
               <span className="item-card-detail-label">Color:</span>
-              <span>{item.color}</span>
+              <span>{item.color ?? 'N/A'}</span>
             </div>
-          )}
-          {item.size && (
             <div className="item-card-detail">
               <span className="item-card-detail-label">Size:</span>
-              <span>{item.size}</span>
+              <span>{item.size ?? 'N/A'}</span>
             </div>
-          )}
-          {item.brand && (
             <div className="item-card-detail">
               <span className="item-card-detail-label">Brand:</span>
-              <span>{item.brand}</span>
+              <span>{item.brand ?? 'N/A'}</span>
             </div>
-          )}
-          {item.boxNumber && (
             <div className="item-card-detail">
               <span className="item-card-detail-label">Box:</span>
-              <span>#{item.boxNumber}</span>
+              <span>#{item.boxNumber ?? 'N/A'}</span>
             </div>
-          )}
-        </div>
-
-        <div className="item-card-care-icons">
-          {item.washingTemperature !== undefined && (
-            <div className="item-card-care-icon active">
-              🌡️ {item.washingTemperature}°C
+          </div>
+          <div className="item-card-care-icons">
+            <div
+              className={`item-card-care-icon ${item.washingTemperature !== undefined ? 'active' : 'inactive'}`}>
+              {item.washingTemperature}°C
             </div>
-          )}
-          {item.canBeIroned && (
-            <div className="item-card-care-icon active">✓ Iron</div>
-          )}
-          {item.canBeDried && (
-            <div className="item-card-care-icon active">✓ Dry</div>
-          )}
-          {item.canBeBleached && (
-            <div className="item-card-care-icon active">✓ Bleach</div>
-          )}
-        </div>
-
-        <div className="item-card-footer">
-          <div className="item-card-actions">
-            <button
-              onClick={handleEdit}
-              className="item-card-btn item-card-btn-edit"
-            >
-              Edit
-            </button>
-            <button
-              onClick={handlePreview}
-              className="item-card-btn item-card-btn-preview"
-            >
-              Image Preview
-            </button>
-            <button
-              onClick={handleDelete}
-              className="item-card-btn item-card-btn-delete"
-            >
-              Delete
-            </button>
+            <div className={`item-card-care-icon ${item.canBeIroned ? 'active' : 'inactive'}`}>
+              Iron
+            </div>
+            <div className={`item-card-care-icon ${item.canBeDried ? 'active' : 'inactive'}`}>
+              Dry
+            </div>
+            <div className={`item-card-care-icon ${item.canBeBleached ? 'active' : 'inactive'}`}>
+              Bleach
+            </div>
           </div>
         </div>
+      </div>
+
+      <div className="item-card-actions">
+        <button
+          onClick={handleEdit}
+          className="item-card-btn item-card-btn-edit"
+          title="Edit"
+          aria-label="Edit item"
+        />
+        <button
+          onClick={handlePreview}
+          className="item-card-btn item-card-btn-preview"
+          title="Preview image"
+          aria-label="Preview image"
+        />
+        <button
+          onClick={handleDelete}
+          className="item-card-btn item-card-btn-delete"
+          title="Delete"
+          aria-label="Delete item"
+        />
       </div>
 
       <ImagePreviewModal

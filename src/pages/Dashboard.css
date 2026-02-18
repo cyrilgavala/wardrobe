@@ -159,9 +159,9 @@
 }
 
 .dashboard-items-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-  gap: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: clamp(0.75rem, 2vw, 1rem);
 }
 
 .dashboard-loading,
@@ -384,12 +384,8 @@
     grid-template-columns: 1fr;
   }
 
-  .dashboard-welcome {
-    padding: 1.5rem;
-  }
-
-  .dashboard-grid {
-    grid-template-columns: 1fr;
+  .dashboard-main {
+    padding: 1rem;
   }
 }
 
